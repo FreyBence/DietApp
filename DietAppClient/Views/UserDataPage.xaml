@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietAppClient.Views"
+             xmlns:vms="clr-namespace:DietAppClient.ViewModels"
+             x:Class="DietAppClient.Views.UserDataPage"
+             Title="Edit Datas">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <ScrollView>
+            <VerticalStackLayout BindingContext="{Binding User}">
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Entry
+                        x:Name="e_Name"
+                        Text="{Binding Name}"
+                        Margin="10,0"
+                        Placeholder="Name"
+                        FontSize="20"
+                        VerticalTextAlignment="Center"/>
+                </Border>
+
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Entry
+                        x:Name="e_Age"
+                        Text="{Binding Age}"
+                        Margin="10,0"
+                        Placeholder="Age"
+                        FontSize="20"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Picker
+                        x:Name="e_Sex"
+                        Title="Sex"
+                        SelectedItem="{Binding Sex}"
+                        Margin="10,0"
+                        FontSize="20">
+
+                        <Picker.Items>
+                            <x:String>Female</x:String>
+                            <x:String>Male</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </Border>
+
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Entry
+                        x:Name="e_Height"
+                        Text="{Binding Height}"
+                        Margin="10,0"
+                        Placeholder="Height (cm)"
+                        FontSize="20"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Entry
+                        x:Name="e_Weight"
+                        Text="{Binding Weight}"
+                        Margin="10,0"
+                        Placeholder="Weight (kg)"
+                        FontSize="20"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Picker
+                        x:Name="e_work"
+                        Title="Work activity"
+                        SelectedItem="{Binding WorkActivity}"
+                        Margin="10,0"
+                        FontSize="20">
+
+                        <Picker.Items>
+                            <x:String>Very light</x:String>
+                            <x:String>Light</x:String>
+                            <x:String>Moderate</x:String>
+                            <x:String>Heavy</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </Border>
+
+                <Border Margin="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Picker
+                        x:Name="e_freeTime"
+                        Title="Free time activity"
+                        SelectedItem="{Binding FreeTimeActivity}"
+                        Margin="10,0"
+                        FontSize="20">
+
+                        <Picker.Items>
+                            <x:String>Very light</x:String>
+                            <x:String>Light</x:String>
+                            <x:String>Moderate</x:String>
+                            <x:String>Active</x:String>
+                            <x:String>Very active</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button
+            Grid.Row="1"
+            x:Name="SaveBtn"
+            Text="Save"
+            Command="{Binding OnSaveClicked}"
+            FontSize="20"
+            Margin="10"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"/>
+
+    </Grid>
+    
+
+</ContentPage>

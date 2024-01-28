@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietAppClient.Views"
+             xmlns:vms="clr-namespace:DietAppClient.ViewModels"
+             x:Class="DietAppClient.Views.StattPage"
+             Title="Statistics">
+    <VerticalStackLayout>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <HorizontalStackLayout>
+                <Border Margin="10"
+                        MaximumWidthRequest="150"
+                        StrokeShape="RoundRectangle 10">
+                    <Entry
+                        x:Name="e_GoalWeight"
+                        Text="{Binding GoalWeight}"
+                        Margin="10,0"
+                        Placeholder="Goal weight"
+                        FontSize="15"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10"
+                        MaximumWidthRequest="150"
+                        StrokeShape="RoundRectangle 10">
+                    <Entry
+                        x:Name="e_ReachDays"
+                        Text="{Binding ReachDays}"
+                        Margin="10,0"
+                        Placeholder="Days to reach"
+                        FontSize="15"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Button
+                    x:Name="btn_Generate"
+                    Command="{Binding OnGenerateClicked}"
+                    Grid.Column="1"
+                    Text="Generate"
+                    Margin="10"
+                    MinimumWidthRequest="100"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End"/>
+
+            </HorizontalStackLayout>
+
+            <Grid Grid.Row="1" VerticalOptions="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button
+                    x:Name="btn_Data"
+                    Clicked="btn_Data_Clicked"
+                    Command="{Binding OnDataClicked}"
+                    Text="Data"
+                    Margin="10"
+                    MinimumWidthRequest="100"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"/>
+
+                <Button
+                    x:Name="btn_Weight"
+                    Clicked="btn_Weight_Clicked"
+                    Command="{Binding OnWeightClicked}"
+                    Grid.Column="1"
+                    Text="Weight"
+                    Margin="10"
+                    MinimumWidthRequest="100"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"/>
+
+                <Button
+                    x:Name="btn_Fat"
+                    Clicked="btn_Fat_Clicked"
+                    Command="{Binding OnFatClicked}"
+                    Grid.Column="2"
+                    Text="Fat"
+                    Margin="10"
+                    MinimumWidthRequest="100"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"/>
+
+                <Button
+                    x:Name="btn_Exp"
+                    Clicked="btn_Exp_Clicked"
+                    Command="{Binding OnExpClicked}"
+                    Grid.Column="3"
+                    Text="Exp"
+                    Margin="10"
+                    MinimumWidthRequest="100"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"/>
+            </Grid>
+
+            <StackLayout Grid.Row="2" x:Name="sl_Datas"/>
+            <ScrollView Grid.Row="2" 
+                        MinimumHeightRequest="550" 
+                        Orientation="Both" 
+                        HorizontalScrollBarVisibility="Never" 
+                        VerticalOptions="FillAndExpand" 
+                        MinimumWidthRequest="1000">
+                <Image x:Name="i_chart" MinimumHeightRequest="550" MinimumWidthRequest="1000"/>
+            </ScrollView>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>

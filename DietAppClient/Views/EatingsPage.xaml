@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietAppClient.Views"
+             xmlns:vms="clr-namespace:DietAppClient.ViewModels"
+             x:Class="DietAppClient.Views.EatingsPage"
+             Title="Eatings">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <ScrollView>
+            <ListView
+                ItemsSource="{Binding Eatings}"
+                SelectedItem="{Binding SelectedEating}">
+                <ListView.ItemTemplate >
+                    <DataTemplate>
+                    <TextCell 
+                            Text="{Binding Food}"
+                            Detail="{Binding Date, StringFormat='{}{0:yyyy/MM/dd}'}"/>
+                </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollView>
+
+        <Grid Grid.Row="1" VerticalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button
+                x:Name="btn_Add"
+                Text="Add"
+                Command="{Binding OnAddClicked}"
+                Margin="10"
+                MinimumWidthRequest="100"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"/>
+
+            <Button
+                x:Name="btn_Update"
+                Grid.Column="1"
+                Text="Edit"
+                Command="{Binding OnUpdateClicked}"
+                Margin="10"
+                MinimumWidthRequest="100"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"/>
+
+            <Button
+                x:Name="btn_Delete"
+                Grid.Column="2"
+                Text="Delete"
+                Command="{Binding OnDeleteClicked}"
+                Margin="10"
+                MinimumWidthRequest="100"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"/>
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

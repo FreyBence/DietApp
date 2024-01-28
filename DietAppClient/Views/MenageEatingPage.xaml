@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietAppClient.Views"
+             xmlns:vms="clr-namespace:DietAppClient.ViewModels"
+             x:Class="DietAppClient.Views.MenageEatingPage"
+             Title="{Binding Title}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <ScrollView>
+            <VerticalStackLayout BindingContext="{Binding Eating}">
+                <Border Margin="10">
+                    <Entry
+                        x:Name="e_Food"
+                        Text="{Binding Food}"
+                        Placeholder="Food"
+                        FontSize="20"
+                        Margin="10,0"
+                        VerticalTextAlignment="Center"/>
+                </Border>
+
+                <Border Margin="10">
+                    <Entry
+                        Text="{Binding Fat}"
+                        Placeholder="Fat (kcal)"
+                        FontSize="20"
+                        Margin="10,0"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10">
+                    <Entry
+                        Text="{Binding Carbohydrate}"
+                        Placeholder="Carbohydrate (kcal)"
+                        FontSize="20"
+                        Margin="10,0"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10">
+                    <Entry
+                        Text="{Binding Protein}"
+                        Placeholder="Protein (kcal)"
+                        FontSize="20"
+                        Margin="10,0"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10">
+                    <DatePicker
+                        Date="{Binding Date}"
+                        Margin="10,0"
+                        FontSize="20"/>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button
+            Grid.Row="1"
+            Text="{Binding ButtonText}"
+            Command="{Binding OnButtonClicked}"
+            FontSize="20"
+            Margin="10"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"/>
+
+    </Grid>
+</ContentPage>

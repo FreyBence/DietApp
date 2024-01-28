@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="DietAppClient.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:DietAppClient"
+    xmlns:views="clr-namespace:DietAppClient.Views"
+    FlyoutBehavior="Flyout"
+    FlyoutHeaderBehavior="Fixed" 
+    FlyoutVerticalScrollMode="Auto">
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:UserDataPage}"
+        Route="UserDataPage"
+       />
+
+    <FlyoutItem Title="Edit Datas">
+        <ShellContent ContentTemplate="{DataTemplate views:UserDataPage}"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Eatings">
+        <ShellContent ContentTemplate="{DataTemplate views:EatingsPage}"/>
+    </FlyoutItem>
+    
+    <FlyoutItem Title="Statistics">
+        <ShellContent ContentTemplate="{DataTemplate views:StattPage}"/>
+    </FlyoutItem>
+
+</Shell>
