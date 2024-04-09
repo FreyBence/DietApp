@@ -1,19 +1,21 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DietAppClient.Models;
-using DietAppClient.ViewModels;
-using DietAppClient.Views;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Windows.Input;
+﻿using DietAppClient.ViewModels;
 
 namespace DietAppClient.Views
 {
     public partial class EatingsPage : ContentPage
     {
+        EatingsViewModel _vm;
         public EatingsPage(EatingsViewModel vm)
-        { 
+        {
+            _vm = vm;
             InitializeComponent();
-            this.BindingContext = vm;
+            this.BindingContext = _vm;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _vm.Refresh();
         }
     }
 }

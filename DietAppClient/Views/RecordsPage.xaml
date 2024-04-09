@@ -3,9 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DietAppClient.Views"
              xmlns:vms="clr-namespace:DietAppClient.ViewModels"
-             x:Class="DietAppClient.Views.EatingsPage"
-             Title="Eatings">
-
+             x:Class="DietAppClient.Views.RecordsPage"
+             Title="Records">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -13,14 +12,14 @@
         </Grid.RowDefinitions>
         <ScrollView>
             <ListView
-                ItemsSource="{Binding Eatings}"
-                SelectedItem="{Binding SelectedEating}">
+                ItemsSource="{Binding Records}"
+                SelectedItem="{Binding SelectedRecord}">
                 <ListView.ItemTemplate >
                     <DataTemplate>
-                    <TextCell 
-                            Text="{Binding Food}"
-                            Detail="{Binding Date, StringFormat='{}{0:yyyy/MM/dd}'}"/>
-                </DataTemplate>
+                        <TextCell 
+                            Text="{Binding Date, StringFormat='{}{0:yyyy/MM/dd}'}"
+                            Detail="{Binding Calories, StringFormat='Calories: {0}'}"/>
+                    </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </ScrollView>
@@ -61,5 +60,4 @@
                 HorizontalOptions="Center"/>
         </Grid>
     </Grid>
-
 </ContentPage>

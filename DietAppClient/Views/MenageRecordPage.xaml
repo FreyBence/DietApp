@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietAppClient.Views"
+             xmlns:vms="clr-namespace:DietAppClient.ViewModels"
+             x:Class="DietAppClient.Views.MenageRecordPage"
+             Title="{Binding Title}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <ScrollView>
+            <VerticalStackLayout BindingContext="{Binding Record}">
+                <Border Margin="10">
+                    <Entry
+                        Text="{Binding Calories}"
+                        Placeholder="Calories"
+                        FontSize="20"
+                        Margin="10,0"
+                        VerticalTextAlignment="Center"
+                        Keyboard="Numeric"/>
+                </Border>
+
+                <Border Margin="10">
+                    <DatePicker
+                        Date="{Binding Date}"
+                        Margin="10,0"
+                        FontSize="20"/>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Text="{Binding ButtonText}"
+                Command="{Binding OnButtonClicked}"
+                FontSize="20"
+                Margin="10"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"/>
+
+            <Button
+                Grid.Column="1"
+                Text="Add test"
+                Command="{Binding OnAddTestClicked}"
+                FontSize="15"
+                Margin="10"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"/>
+
+            <Button
+                Grid.Column="2"
+                Text="Clear test"
+                Command="{Binding OnClearTestClicked}"
+                FontSize="15"
+                Margin="10"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"/>
+
+        </Grid>
+    </Grid>
+</ContentPage>

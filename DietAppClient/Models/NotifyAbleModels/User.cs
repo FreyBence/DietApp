@@ -1,23 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace DietAppClient.Models
 {
     public class User : INotifyPropertyChanged
     {
         private string name;
-        private int age;
+        private int? age;
         private string sex;
-        private int height;
-        private int weight;
+        private int? height;
+        private int? weight;
         private string workActivity;
         private string freeTimeActivity;
+        private DateTime date;
 
         public string Name
         {
@@ -25,7 +19,7 @@ namespace DietAppClient.Models
             set { name = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Name")); }
         }
 
-        public int Age
+        public int? Age
         {
             get { return age; }
             set { age = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Age")); }
@@ -36,12 +30,12 @@ namespace DietAppClient.Models
             set { sex = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sex")); }
         }
 
-        public int Height
+        public int? Height
         {
             get { return height; }
             set { height = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Height")); }
         }
-        public int Weight
+        public int? Weight
         {
             get { return weight; }
             set { weight = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Weight")); }
@@ -62,6 +56,16 @@ namespace DietAppClient.Models
                 freeTimeActivity = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FreeTimeActivity"));
             }
         }
+
+        public DateTime Date
+        {
+            get { return date; }
+            set
+            {
+                date = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Date"));
+            }
+        }
+
         public User GetCopy()
         {
             return new User()
@@ -73,6 +77,7 @@ namespace DietAppClient.Models
                 Weight = this.Weight,
                 FreeTimeActivity = this.FreeTimeActivity,
                 WorkActivity = this.WorkActivity,
+                Date = this.Date
             };
         }
 

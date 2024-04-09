@@ -1,27 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using DietAppClient.Data;
 using DietAppClient.Models;
 using DietAppClient.Views;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace DietAppClient.ViewModels
 {
-    [QueryProperty(nameof(DoRefresh), "DoRefresh")]
     public class EatingsViewModel : INotifyPropertyChanged
     {
         IEatingRepository _repo;
-        public bool DoRefresh { set { Refresh(); SelectedEating = Eatings.FirstOrDefault(t => t.Id == SelectedEating.Id); } }
         public ObservableCollection<Eating> Eatings { get; set; }
 
         private Eating selectedEating;
@@ -48,39 +37,38 @@ namespace DietAppClient.ViewModels
         public EatingsViewModel(IEatingRepository repo)
         {
             _repo = repo;
-
             Eatings = new ObservableCollection<Eating>(repo.ReadAll());
-
             OnAddClicked = new Command(Add);
             OnUpdateClicked = new RelayCommand(Update, () => SelectedEating != null);
             OnDeleteClicked = new RelayCommand(Delete, () => SelectedEating != null);
-
         }
-        public async Task Refresh()
+        public void Refresh()
         {
             Eatings = new ObservableCollection<Eating>(_repo.ReadAll());
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Eatings"));
+            SelectedEating = Eatings.FirstOrDefault(t => t.Id == SelectedEating?.Id, null);
         }
-
 
         public async void Add()
         {
-            await Shell.Current.GoToAsync(nameof(MenageEatingPage) + "?DoChange=Add");
+            var navigationParams = new Dictionary<string, object> {
+                { "Eating", null }
+            };
+            await Shell.Current.GoToAsync(nameof(MenageEatingPage), navigationParams);
         }
 
         private async void Update()
         {
-            await Shell.Current.GoToAsync(nameof(MenageEatingPage), new Dictionary<string, object> {
-                { "Eating", SelectedEating },
-                { "DoChange", "Edit" }
-            });
+            var navigationParams = new Dictionary<string, object> {
+                { "Eating", SelectedEating }
+            };
+            await Shell.Current.GoToAsync(nameof(MenageEatingPage), navigationParams);
         }
 
         private async void Delete()
         {
             _repo.Delete(SelectedEating.Id);
             Refresh();
-            SelectedEating = null;
         }
     }
 }

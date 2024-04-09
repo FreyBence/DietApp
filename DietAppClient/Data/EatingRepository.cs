@@ -1,11 +1,5 @@
-﻿using DietAppClient.Models;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DietAppClient.Helpers;
+﻿using DietAppClient.Helpers;
+using DietAppClient.Models;
 
 namespace DietAppClient.Data
 {
@@ -39,7 +33,6 @@ namespace DietAppClient.Data
         public void Update(Eating eating)
         {
             var old = eatings.FirstOrDefault(t => t.Id == eating.Id);
-
             old.Food = eating.Food;
             old.Fat = eating.Fat;
             old.Protein = eating.Protein;

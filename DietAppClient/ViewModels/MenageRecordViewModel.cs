@@ -5,19 +5,20 @@ using System.Windows.Input;
 
 namespace DietAppClient.ViewModels
 {
-    [QueryProperty(nameof(Eating), "Eating")]
-    public class MenageEatingViewModel : INotifyPropertyChanged
+    [QueryProperty(nameof(Record), "Record")]
+    public class MenageRecordViewModel : INotifyPropertyChanged
     {
-        IEatingRepository _repo;
+        Random rn = new Random();
+        IRecordRepository _repo;
 
-        private Eating eating;
+        private Record record;
 
-        public Eating Eating
+        public Record Record
         {
-            get { return eating; }
+            get { return record; }
             set
             {
-                eating = value?.GetCopy(); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Eating"));
+                record = value?.GetCopy(); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Record"));
             }
         }
 
@@ -52,26 +53,31 @@ namespace DietAppClient.ViewModels
                 onButtonClicked = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("OnButtonClicked"));
             }
         }
+        public ICommand OnAddTestClicked { get; set; }
+        public ICommand OnClearTestClicked { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MenageEatingViewModel(IEatingRepository repo)
+        public MenageRecordViewModel(IRecordRepository repo)
         {
             _repo = repo;
+            OnClearTestClicked = new Command(ClearTest);
+            OnAddTestClicked = new Command(AddTest);
+
         }
 
         public void Refresh()
         {
-            if (Eating == null)
+            if (Record == null)
             {
-                Eating = new Eating();
-                Title = "Add Eating";
+                Record = new Record();
+                Title = "Add Record";
                 ButtonText = "Add";
                 OnButtonClicked = new Command(OnAddClicked);
             }
             else
             {
-                Title = "Edit Eating";
+                Title = "Edit Record";
                 ButtonText = "Edit";
                 OnButtonClicked = new Command(OnEditClicked);
             }
@@ -79,15 +85,36 @@ namespace DietAppClient.ViewModels
 
         private async void OnAddClicked()
         {
-            _repo.Create(Eating);
+            _repo.Create(Record);
             await Shell.Current.GoToAsync($"../");
         }
 
         private async void OnEditClicked()
         {
-            _repo.Update(Eating);
+            _repo.Update(Record);
             await Shell.Current.GoToAsync($"../");
         }
 
+        private async void ClearTest()
+        {
+            var items = _repo.ReadAll().ToArray();
+            for (int i = 0; i < items.Length; i++)
+            {
+                _repo.Delete(items[i].Id);
+                await Shell.Current.GoToAsync($"../");
+            }
+        }
+
+        private async void AddTest()
+        {
+            for(var i = 0; i < 100; i++) 
+            {
+                _repo.Create(new Record() { 
+                    Calories = rn.Next(2800, 3500),
+                    Date = DateTime.Now.AddDays(i + 1)
+                });
+            }
+            await Shell.Current.GoToAsync($"../");
+        }
     }
 }

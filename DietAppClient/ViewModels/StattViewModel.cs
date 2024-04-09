@@ -1,14 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.Input;
+using DietAppClient.Exceptions;
+using DietAppClient.Helpers;
 using DietAppClient.Logics;
 using DietAppClient.Models;
-using System;
-using System.Collections.Generic;
+using DietAppClient.Views;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using ImageChartsLib;
 
 namespace DietAppClient.ViewModels
 {
@@ -16,37 +14,162 @@ namespace DietAppClient.ViewModels
     {
         IStattLogic _logic;
 
-        private bool isGenerated;
-        public bool IsGenerated
-        {
-            get { return isGenerated; }
-            set
-            {
-                isGenerated = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsGenerated"));
-                (OnDataClicked as RelayCommand).NotifyCanExecuteChanged();
-                (OnWeightClicked as RelayCommand).NotifyCanExecuteChanged();
-                (OnFatClicked as RelayCommand).NotifyCanExecuteChanged();
-                (OnExpClicked as RelayCommand).NotifyCanExecuteChanged();
-            }
-        }
-
-        private int goalWeight;
-        public int GoalWeight
+        private double? goalWeight;
+        public double? GoalWeight
         {
             get { return goalWeight; }
             set
             {
-                goalWeight = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GoalWeight"));
+                goalWeight = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GoalWeight"));
+                (OnGenerateClicked as RelayCommand).NotifyCanExecuteChanged();
             }
         }
 
-        private int reachDays;
-        public int ReachDays
+        private int? reachDays;
+        public int? ReachDays
         {
             get { return reachDays; }
             set
             {
-                reachDays = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReachDays"));
+                reachDays = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ReachDays"));
+                (OnGenerateClicked as RelayCommand).NotifyCanExecuteChanged();
+            }
+        }
+
+        private double? avgDailyCols;
+        public double? AvgDailyCols
+        {
+            get { return avgDailyCols; }
+            set
+            {
+                avgDailyCols = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AvgDailyCols"));
+                (OnDataClicked as RelayCommand).NotifyCanExecuteChanged();
+            }
+        }
+        private double preMaintCols;
+        public double PreMaintCols
+        {
+            get { return preMaintCols; }
+            set
+            {
+                preMaintCols = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PreMaintCols"));
+            }
+        }
+
+        private double processCols;
+        public double ProcessCols
+        {
+            get { return processCols; }
+            set
+            {
+                processCols = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProcessCols"));
+            }
+        }
+
+        private double postMaintCols;
+        public double PostMaintCols
+        {
+            get { return postMaintCols; }
+            set
+            {
+                postMaintCols = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PostMaintCols"));
+            }
+        }
+
+        private double preWeight;
+        public double PreWeight
+        {
+            get { return preWeight; }
+            set
+            {
+                preWeight = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PreWeight"));
+            }
+        }
+
+        private double postWeight;
+        public double PostWeight
+        {
+            get { return postWeight; }
+            set
+            {
+                postWeight = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PostWeight"));
+            }
+        }
+
+        private double preFatP;
+        public double PreFatP
+        {
+            get { return preFatP; }
+            set
+            {
+                preFatP = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PreFatP"));
+            }
+        }
+
+        private double postFatP;
+        public double PostFatP
+        {
+            get { return postFatP; }
+            set
+            {
+                postFatP = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PostFatP"));
+            }
+        }
+
+        private double preBmi;
+        public double PreBmi
+        {
+            get { return preBmi; }
+            set
+            {
+                preBmi = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PreBmi"));
+            }
+        }
+
+        private double postBmi;
+        public double PostBmi
+        {
+            get { return postBmi; }
+            set
+            {
+                postBmi = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PostBmi"));
+            }
+        }
+
+        private ImageSource weightChartImageSource;
+        public ImageSource WeightChartImageSource
+        {
+            get { return weightChartImageSource; }
+            set
+            {
+                weightChartImageSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WeightChartImageSource"));
+                (OnWeightClicked as RelayCommand).NotifyCanExecuteChanged();
+            }
+        }
+        private ImageSource fatChartImageSource;
+        public ImageSource FatChartImageSource
+        {
+            get { return fatChartImageSource; }
+            set
+            {
+                fatChartImageSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FatChartImageSource"));
+                (OnFatClicked as RelayCommand).NotifyCanExecuteChanged();
+            }
+        }
+        private ImageSource expChartImageSource;
+        public ImageSource ExpChartImageSource
+        {
+            get { return expChartImageSource; }
+            set
+            {
+                expChartImageSource = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ExpChartImageSource"));
+                (OnExpClicked as RelayCommand).NotifyCanExecuteChanged();
             }
         }
 
@@ -56,166 +179,48 @@ namespace DietAppClient.ViewModels
         public ICommand OnFatClicked { get; set; }
         public ICommand OnExpClicked { get; set; }
 
-        private double avgDailyCols;
-        private double preMaintCols;
-        private double processCols;
-        private double postMaintCols;
-        private double preFatP;
-        private double postFatP;
-        private double preBmi;
-        private double postBmi;
-        private double preWeight;
-        private double postWeight;
-
-        private ChartDataSet[] chartDatas;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public StattViewModel(IStattLogic logic)
         {
             _logic = logic;
-            isGenerated = false;
-            OnGenerateClicked = new Command(Generate);
-            OnDataClicked = new RelayCommand(() => { }, () => IsGenerated);
-            OnWeightClicked = new RelayCommand(() => { }, () => IsGenerated);
-            OnFatClicked = new RelayCommand(() => { }, () => IsGenerated);
-            OnExpClicked = new RelayCommand(() => { }, () => IsGenerated);
-            
+
+            OnGenerateClicked = new RelayCommand(Generate, () =>
+            {
+                return goalWeight > 0 && reachDays > 0;
+            });
+            OnDataClicked = new RelayCommand(() => { }, () => AvgDailyCols != null);
+            OnWeightClicked = new RelayCommand(() => { }, () => WeightChartImageSource != null);
+            OnFatClicked = new RelayCommand(() => { }, () => FatChartImageSource != null);
+            OnExpClicked = new RelayCommand(() => { }, () => ExpChartImageSource != null);
         }
 
         private void Generate()
         {
             try
             {
-                double[] bmis = _logic.GetBmis(goalWeight);
-                preBmi = Math.Round(bmis[0], 1);
-                postBmi = Math.Round(bmis[1], 1);
+                (Dictionary<string, double> dietDatas, ChartDataSet[] chartDatas) = _logic.GetDietDatas((double)goalWeight, (int)reachDays);
 
-                avgDailyCols = Math.Round(_logic.GetAverageDailyCalorie(), 1);
-                preMaintCols = Math.Round(_logic.GetPreMaintCols(), 1);
+                AvgDailyCols = dietDatas[nameof(AvgDailyCols)];
+                PreMaintCols = dietDatas[nameof(PreMaintCols)];
+                ProcessCols = dietDatas[nameof(ProcessCols)];
+                PostMaintCols = dietDatas[nameof(PostMaintCols)];
+                PreWeight = dietDatas[nameof(PreWeight)];
+                PostWeight = dietDatas[nameof(PostWeight)];
+                PreFatP = dietDatas[nameof(PreFatP)];
+                PostFatP = dietDatas[nameof(PostFatP)];
+                PreBmi = dietDatas[nameof(PreBmi)];
+                PostBmi = dietDatas[nameof(PostBmi)];
 
-                double[] cols = _logic.GenerateGoalInterventions(goalWeight, reachDays);
-                processCols = Math.Round(cols[0], 1);
-                postMaintCols = Math.Round(cols[1], 1);
-
-                chartDatas = _logic.GetChartDatas(365);
-                preWeight = Math.Round(chartDatas[0].Weight, 1);
-                postWeight = Math.Round(chartDatas[364].Weight, 1);
-                preFatP = Math.Round(chartDatas[0].FatPercent, 1);
-                postFatP = Math.Round(chartDatas[364].FatPercent, 1);
-
-                IsGenerated = true;
+                WeightChartImageSource = ChartImageGenerator.GenerateWeightChart(chartDatas, PreWeight, PostWeight, (int)ReachDays);
+                FatChartImageSource = ChartImageGenerator.GenerateFatChart(chartDatas, preFatP, PostFatP, (int)ReachDays);
+                ExpChartImageSource = ChartImageGenerator.GenerateExpChart(chartDatas, processCols, (int)ReachDays);
             }
-            catch (Exception e) 
-            { 
-
-            }
-        }
-
-        public List<Label> SwitchToData()
-        {
-            List<Label> result = new List<Label>();
-
-            Label label = new Label();
-            label.HeightRequest = 20;
-            label.VerticalTextAlignment = TextAlignment.Start;
-            label.VerticalOptions = LayoutOptions.Fill;
-            label.Margin = 10;
-
-            label.Text = $"Average daily calorie: {avgDailyCols} (Cal)";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Maintain calorie: {preMaintCols} (Cal/day)";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Calorie to reach goal: {processCols} (Cal/day)";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Calorie to maintain goal: {postMaintCols} (Cal/day)";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Current wieght: {preWeight} kg";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Final wieght: {postWeight} kg";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Current fat: {preFatP}%";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Final fat: {postFatP}%";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Current BMI: {preBmi}";
-            result.Add(GetLabelCopy(label));
-            label.Text = $"Final BMI: {postBmi}";
-            result.Add(label);
-
-            return result;
-        }
-
-        public ImageSource SwitchToWeight()
-        { 
-            string chd = "a:|" +Math.Round(chartDatas[0].Weight, 1).ToString();
-            string chxl = "1:|1";
-            for (int i = 1; i < chartDatas.Length; i++)
+            catch (HealthCheckException e)
             {
-                chd += "," + Math.Round(chartDatas[i].Weight, 1).ToString();
-
-                if ((i + 1) % 50 == 0)
-                    chxl += "|" + (i + 1);
+                var popup = new PopupView(e.Message.Replace(", ", ",\n"));
+                App.Current.MainPage.ShowPopup(popup);
             }
-
-            ImageCharts chart = new ImageCharts().cht("lc").chxt("y,x")
-                .chco("512BD4").chs("999x550").chd(chd).chl("Goal day".PadLeft(reachDays, '|'))
-                .chds("a").chxl(chxl).chxr($"0,{preWeight - 5},{goalWeight + 5}");
-            MemoryStream memory = new MemoryStream(chart.toBuffer());
-            return ImageSource.FromStream(() => memory);
         }
-
-        public ImageSource SwitchToFat()
-        {
-            string chd = "a:|" + Math.Round(chartDatas[0].FatPercent, 1).ToString();
-            string chxl = "1:|1";
-            for (int i = 1; i < chartDatas.Length; i++)
-            {
-                chd += "," + Math.Round(chartDatas[i].FatPercent, 1).ToString();
-
-                if ((i + 1) % 50 == 0)
-                    chxl += "|" + (i + 1);
-            }
-
-            ImageCharts chart = new ImageCharts().cht("lc").chxt("y,x")
-                .chco("512BD4").chs("999x550").chd(chd).chl("Goal day".PadLeft(reachDays, '|'))
-                .chds("a").chxl(chxl).chxr($"0,{Math.Round(preFatP) - 5},{Math.Round(postFatP) + 5}");
-            MemoryStream memory = new MemoryStream(chart.toBuffer());
-            return ImageSource.FromStream(() => memory);
-        }
-
-        public ImageSource SwitchToExp()
-        {
-            string chd2 = "a:|" + Math.Round(chartDatas[0].Expenditure, 1).ToString();
-            string chd1 = "|" + Math.Round(chartDatas[0].Intake, 1).ToString();
-            string chxl = "1:|1";
-            for (int i = 1; i < chartDatas.Length; i++)
-            {
-                chd1 += "," + Math.Round(chartDatas[i].Intake, 1).ToString();
-                chd2 += "," + Math.Round(chartDatas[i].Expenditure, 1).ToString();
-
-                if ((i + 1) % 50 == 0)
-                    chxl += "|" + (i + 1);
-            }
-
-            ImageCharts chart = new ImageCharts().cht("lc").chxt("y,x")
-                .chco("3072F3,ff0000,ff0000").chs("999x550").chd(chd2 + "|" + chd1).chl("Goal day".PadLeft(reachDays, '|'))
-                .chdl("Intake|Expenditure").chdlp("b")
-                .chds("a").chxl(chxl).chxr($"0,{Math.Round(chartDatas[0].Intake)},{processCols}");
-            MemoryStream memory = new MemoryStream(chart.toBuffer());
-            return ImageSource.FromStream(() => memory);
-        }
-
-        private Label GetLabelCopy(Label label)
-        { 
-            Label copy = new Label();
-            copy.HeightRequest = label.HeightRequest;
-            copy.VerticalTextAlignment = label.VerticalTextAlignment;
-            copy.VerticalOptions = label.VerticalOptions;
-            copy.Margin = label.Margin;
-            copy.Text = label.Text ;
-
-            return copy;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

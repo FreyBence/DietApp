@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DietAppClient.Views"
              xmlns:vms="clr-namespace:DietAppClient.ViewModels"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              x:Class="DietAppClient.Views.StattPage"
              Title="Statistics">
     <VerticalStackLayout>
@@ -31,7 +32,7 @@
                         StrokeShape="RoundRectangle 10">
                     <Entry
                         x:Name="e_ReachDays"
-                        Text="{Binding ReachDays}"
+                        Text="{Binding ReachDays, TargetNullValue={x:StaticExtension Member=system:String.Empty}}"
                         Margin="10,0"
                         Placeholder="Days to reach"
                         FontSize="15"
@@ -59,8 +60,8 @@
                 </Grid.ColumnDefinitions>
                 <Button
                     x:Name="btn_Data"
-                    Clicked="btn_Data_Clicked"
                     Command="{Binding OnDataClicked}"
+                    Clicked="btn_Data_Clicked"
                     Text="Data"
                     Margin="10"
                     MinimumWidthRequest="100"
@@ -69,8 +70,8 @@
 
                 <Button
                     x:Name="btn_Weight"
-                    Clicked="btn_Weight_Clicked"
                     Command="{Binding OnWeightClicked}"
+                    Clicked="btn_Weight_Clicked"
                     Grid.Column="1"
                     Text="Weight"
                     Margin="10"
@@ -80,8 +81,8 @@
 
                 <Button
                     x:Name="btn_Fat"
-                    Clicked="btn_Fat_Clicked"
                     Command="{Binding OnFatClicked}"
+                    Clicked="btn_Fat_Clicked"
                     Grid.Column="2"
                     Text="Fat"
                     Margin="10"
@@ -91,8 +92,8 @@
 
                 <Button
                     x:Name="btn_Exp"
-                    Clicked="btn_Exp_Clicked"
                     Command="{Binding OnExpClicked}"
+                    Clicked="btn_Exp_Clicked"
                     Grid.Column="3"
                     Text="Exp"
                     Margin="10"
@@ -101,14 +102,80 @@
                     HorizontalOptions="Center"/>
             </Grid>
 
-            <StackLayout Grid.Row="2" x:Name="sl_Datas"/>
+            <StackLayout Grid.Row="2" x:Name="sl_Datas" IsVisible="false">
+                <Label
+                    Text="{Binding AvgDailyCols, StringFormat='Average daily calorie: {0:F1} (Cal)'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PreMaintCols, StringFormat='Maintain calorie: {0:F1} (Cal/day)'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding ProcessCols, StringFormat='Calorie to reach goal: {0:F1} (Cal/day)'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PostMaintCols, StringFormat='Calorie to maintain goal: {0:F1} (Cal/day)'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PreWeight, StringFormat='Current wieght: {0:F1} kg'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PostWeight, StringFormat='Final wieght: {0:F1} kg'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PreFatP, StringFormat='Current fat: {0:F1}%'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PostFatP, StringFormat='Final fat: {0:F1}%'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PreBmi, StringFormat='Current BMI: {0:F1}'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+                <Label
+                    Text="{Binding PostBmi, StringFormat='Final BMI: {0:F1}'}"
+                    HeightRequest="20" 
+                    VerticalTextAlignment="Start" 
+                    VerticalOptions="Fill" 
+                    Margin="10"/>
+            </StackLayout>
+
             <ScrollView Grid.Row="2" 
-                        MinimumHeightRequest="550" 
-                        Orientation="Both" 
-                        HorizontalScrollBarVisibility="Never" 
-                        VerticalOptions="FillAndExpand" 
-                        MinimumWidthRequest="1000">
-                <Image x:Name="i_chart" MinimumHeightRequest="550" MinimumWidthRequest="1000"/>
+                MinimumHeightRequest="550" 
+                Orientation="Both" 
+                HorizontalScrollBarVisibility="Never" 
+                VerticalOptions="FillAndExpand" 
+                MinimumWidthRequest="1000">
+                <StackLayout>
+                    <Image x:Name="i_chart_weight" IsVisible="false" MinimumHeightRequest="550" MinimumWidthRequest="1000" Source="{Binding WeightChartImageSource}"/>
+                    <Image x:Name="i_chart_fat" IsVisible="false" MinimumHeightRequest="550" MinimumWidthRequest="1000" Source="{Binding FatChartImageSource}"/>
+                    <Image x:Name="i_chart_exp" IsVisible="false" MinimumHeightRequest="550" MinimumWidthRequest="1000" Source="{Binding ExpChartImageSource}"/>
+                </StackLayout>
             </ScrollView>
         </Grid>
     </VerticalStackLayout>

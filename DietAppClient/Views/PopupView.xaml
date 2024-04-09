@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="DietAppClient.Views.PopupView"
+             CanBeDismissedByTappingOutsideOfPopup="True">
+    <VerticalStackLayout
+        BackgroundColor="White"
+        Padding="20"
+        Spacing="30"
+        MinimumWidthRequest="250"
+        MinimumHeightRequest="150">
+        <Label 
+            x:Name="lb_text"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"/>
+
+        <Button 
+            Text="Ok"
+            Clicked="Button_Clicked"
+            VerticalOptions="End" 
+            HorizontalOptions="Center"/>
+    </VerticalStackLayout>
+</toolkit:Popup>

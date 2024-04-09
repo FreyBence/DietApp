@@ -1,15 +1,8 @@
-﻿using DietAppClient.Models;
-using Microsoft.Maui;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DietAppClient.Helpers;
+﻿using DietAppClient.Helpers;
+using DietAppClient.Models;
 
 namespace DietAppClient.Data
 {
-
     public class UserRepository : IUserRepository
     {
         string filePath;
@@ -18,7 +11,7 @@ namespace DietAppClient.Data
         public UserRepository()
         {
             filePath = System.IO.Path.Combine(FileSystem.Current.AppDataDirectory, "user.json");
-            user = JsonParser.ReadJson(new User(), filePath);
+            user = JsonParser.ReadJson(new User() { Date = DateTime.Now }, filePath);
         }
 
         public User Read()
@@ -35,6 +28,7 @@ namespace DietAppClient.Data
             user.Weight = u.Weight;
             user.FreeTimeActivity = u.FreeTimeActivity;
             user.WorkActivity = u.WorkActivity;
+            user.Date = DateTime.Now;
             JsonParser.WriteJson(user, filePath);
         }
 

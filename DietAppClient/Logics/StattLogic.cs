@@ -1,10 +1,6 @@
 ﻿using DietAppClient.Data;
+using DietAppClient.Exceptions;
 using DietAppClient.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DietAppClient.Logics
 {
@@ -12,32 +8,135 @@ namespace DietAppClient.Logics
     {
         IEatingRepository _eatingRepo;
         IUserRepository _userRepo;
-        Baseline baseline;
-        Intervention goalIntervention;
-        Intervention goalMaintIntervention;
+        IRecordRepository _recordRepo;
+        IBaselineLogic _baselineLogic;
+        IBodyModelLogic _bodyModelLogic;
+        IInterventionLogic _interventionLogic;
+        IDailyParamsLogic _dailyParamsLogic;
 
-        public StattLogic(IUserRepository userRepo, IEatingRepository eatingRepo)
+        public StattLogic(IUserRepository userRepo, IEatingRepository eatingRepo, IRecordRepository recordRepo,
+            IBaselineLogic baselineLogic, IBodyModelLogic bodyModelLogic, IInterventionLogic interventionLogic, IDailyParamsLogic dailyParamsLogic)
         {
             _userRepo = userRepo;
             _eatingRepo = eatingRepo;
-            User user = userRepo.Read();
-            baseline = new Baseline(
-                user.Sex == "Male",
-                user.Age,
-                user.Height,
-                user.Weight,
-                GetPal(user.WorkActivity, user.FreeTimeActivity));
+            _recordRepo = recordRepo;
+            _baselineLogic = baselineLogic;
+            _bodyModelLogic = bodyModelLogic;
+            _interventionLogic = interventionLogic;
+            _dailyParamsLogic = dailyParamsLogic;
         }
 
-        public double[] GetBmis(double goalWeight)
+        public (Dictionary<string, double>, ChartDataSet[]) GetDietDatas(double goalWeight, int goalTime, int simlength = 365)
+        {
+            Baseline baseline = GetBaslineFromUser();
+            (Intervention goalIntervention, Intervention goalMaintIntervention) = GenerateGoalInterventions(goalWeight, goalTime, baseline);
+            List<Record> records = _recordRepo.ReadAll().ToList();
+            DailyParams[] paramtraj = _dailyParamsLogic.GetParamtray(baseline, goalIntervention, goalMaintIntervention, simlength);
+            BodyModel[] bodytraj = new BodyModel[simlength];
+            ChartDataSet[] chartDataSets = new ChartDataSet[simlength];
+
+            bodytraj[0] = _bodyModelLogic.GenerateBodyModel(baseline);
+            chartDataSets[0] = new ChartDataSet()
+            {
+                Weight = _bodyModelLogic.GetWeight(bodytraj[0], baseline),
+                FatPercent = _bodyModelLogic.GetFatPercent(bodytraj[0], baseline),
+                Intake = paramtraj[0].Calories,
+                Expenditure = _bodyModelLogic.GetExpend(bodytraj[0], baseline, paramtraj[0]),
+            };
+
+            foreach (var param in paramtraj)
+            {
+                var recordCals = records.Where(t => t.Date.ToString("yyyy-MM-dd") == param.Date.ToString("yyyy-MM-dd"));
+                if (recordCals.Count() != 0)
+                    param.Calories = recordCals.Sum(t => (double)t.Calories);
+            }
+
+            for (int i = 1; i < simlength; i++)
+            {
+                DailyParams dparams = paramtraj[i];
+                bodytraj[i] = _bodyModelLogic.GetBodytraj(bodytraj[i - 1], baseline, dparams);
+                chartDataSets[i] = new ChartDataSet()
+                {
+                    Weight = _bodyModelLogic.GetWeight(bodytraj[i], baseline),
+                    FatPercent = _bodyModelLogic.GetFatPercent(bodytraj[i], baseline),
+                    Intake = paramtraj[i].Calories,
+                    Expenditure = _bodyModelLogic.GetTEE(bodytraj[i], baseline, paramtraj[i])
+                };
+            }
+
+            (double preBmi, double postBmi) = GetBmis(goalWeight);
+            Dictionary<string, double> dietDatas = new Dictionary<string, double>()
+            {
+                ["AvgDailyCols"] = GetAverageDailyCalorie(),
+                ["PreMaintCols"] = _baselineLogic.GetMaintCals(baseline),
+                ["ProcessCols"] = goalIntervention.Calories,
+                ["PostMaintCols"] = goalMaintIntervention.Calories,
+                ["PreWeight"] = chartDataSets[0].Weight,
+                ["PostWeight"] = chartDataSets[364].Weight,
+                ["PreFatP"] = chartDataSets[0].FatPercent,
+                ["PostFatP"] = chartDataSets[364].FatPercent,
+                ["PreBmi"] = preBmi,
+                ["PostBmi"] = postBmi
+            };
+
+            return (dietDatas, chartDataSets);
+        }
+
+        private (Intervention, Intervention) GenerateGoalInterventions(double goalWeight, int goalTime, Baseline baseline)
+        {
+            double[] range = _baselineLogic.GetHealthyWeightRange(baseline);
+            if (goalWeight < range[0] || goalWeight > range[1])
+                throw new HealthCheckException($"Goal is not recommended, healthy weight range: {range[0]} - {range[1]}");
+
+            Intervention goalIntervention = _interventionLogic.CheckGoal(baseline, goalWeight, goalTime);
+            Intervention goalMaintIntervention = new Intervention();
+
+            BodyModel goalBody = _bodyModelLogic.GenerateBodyModel(baseline, goalIntervention, goalTime + 1);
+            double goalMaintCals;
+
+            if (goalWeight == baseline.Weight)
+                goalMaintCals = _baselineLogic.GetMaintCals(baseline);
+            else
+                goalMaintCals = _bodyModelLogic.Cals4balance(goalBody, baseline, _baselineLogic.GetActivityParam(baseline));
+
+            goalMaintIntervention.Day = goalTime + 1;
+            goalMaintIntervention.Calories = goalMaintCals;
+            goalMaintIntervention.Carbinpercent = baseline.CarbIntakePct;
+            _interventionLogic.SetProportionalSodium(goalMaintIntervention, baseline);
+
+            return (goalIntervention, goalMaintIntervention);
+        }
+
+        private (double, double) GetBmis(double goalWeight)
         {
             User user = _userRepo.Read();
-            return new double[] { user.Weight / Math.Pow(user.Height / 100.0, 2.0), goalWeight / Math.Pow(user.Height / 100.0, 2.0) };
+            return ((double)user.Weight / Math.Pow((double)user.Height / 100.0, 2.0), goalWeight / Math.Pow((double)user.Height / 100.0, 2.0));
         }
 
-        public double GetPreMaintCols()
+        private double GetAverageDailyCalorie()
         {
-            return baseline.GetMaintCals();
+            List<int> dailyCalories = new List<int>();
+
+            if (_eatingRepo.ReadAll().Count() == 0)
+                return 0;
+
+            foreach (var item in _eatingRepo.ReadAll().GroupBy(t => t.Date.ToString("yyyy-MM-dd")))
+            {
+                dailyCalories.Add(item.Sum(t => (int)t.Fat + (int)t.Protein + (int)t.Carbohydrate));
+            }
+            return dailyCalories.Average();
+        }
+
+        private Baseline GetBaslineFromUser()
+        {
+            User user = _userRepo.Read();
+            return new Baseline(
+                user.Sex == "Male",
+                (int)user.Age,
+                (double)user.Height,
+                (double)user.Weight,
+                GetPal(user.WorkActivity, user.FreeTimeActivity),
+                user.Date);
         }
 
         private double GetPal(string workActivity, string freeTimeActivity)
@@ -60,7 +159,7 @@ namespace DietAppClient.Logics
                     break;
             }
 
-            switch (workActivity)
+            switch (freeTimeActivity)
             {
                 case "Very light":
                     result += 0.2;
@@ -79,77 +178,6 @@ namespace DietAppClient.Logics
                     break;
             }
             return result;
-        }
-
-        public double[] GenerateGoalInterventions(double goalWeight, int goalTime)
-        {
-            double[] range = baseline.GetHealthyWeightRange();
-            if (goalWeight < range[0] || goalWeight > range[1])
-                throw new Exception($"Goal is not healthy, healthy range: {range[0]} - {range[1]}");
-
-            goalIntervention = new Intervention();
-            goalMaintIntervention = goalIntervention;
-            goalIntervention = goalIntervention.CheckGoal(baseline, goalWeight, goalTime);
-
-            BodyModel goalBody = new BodyModel(baseline, goalIntervention, goalTime + 1);
-            double goalMaintCals;
-
-            if (goalWeight == baseline.Weight)
-                goalMaintCals = baseline.GetMaintCals();
-            else
-                goalMaintCals = goalBody.Cals4balance(baseline, goalMaintIntervention.GetAct(baseline));
-
-            goalMaintIntervention.Day = goalTime + 1;
-            goalMaintIntervention.Calories = goalMaintCals;
-            goalMaintIntervention.Carbinpercent = baseline.CarbIntakePct;
-            goalMaintIntervention.SetProportionalSodium(baseline);
-
-            return new double[2] { goalIntervention.Calories, goalMaintIntervention.Calories };
-        }
-
-        public ChartDataSet[] GetChartDatas(int simlength)
-        {
-            DailyParams[] paramtraj = DailyParams.GetParamtray(baseline, goalIntervention, goalMaintIntervention, simlength);
-            BodyModel[] bodytraj = new BodyModel[simlength];
-            ChartDataSet[] chartDataSets = new ChartDataSet[simlength];
-
-            bodytraj[0] = new BodyModel(baseline);
-            chartDataSets[0] = new ChartDataSet()
-            {
-                Weight = bodytraj[0].GetWeight(baseline),
-                FatPercent = bodytraj[0].GetFatPercent(baseline),
-                Intake = paramtraj[0].Calories,
-                Expenditure = bodytraj[0].GetExpend(baseline, paramtraj[0]),
-            };
-
-            for (int i = 1; i < simlength; i++)
-            {
-                DailyParams dparams = paramtraj[i];
-                bodytraj[i] = BodyModel.GetBodytraj(bodytraj[i - 1], baseline, dparams);
-                chartDataSets[i] = new ChartDataSet()
-                {
-                    Weight = bodytraj[i].GetWeight(baseline),
-                    FatPercent = bodytraj[i].GetFatPercent(baseline),
-                    Intake = paramtraj[i].Calories,
-                    Expenditure = bodytraj[i].GetTEE(baseline, paramtraj[i]),
-                };
-            }
-
-            return chartDataSets;
-        }
-
-        public double GetAverageDailyCalorie()
-        {
-            List<int> dailyCalories = new List<int>();
-
-            if (_eatingRepo.ReadAll().Count() == 0)
-                return 0;
-
-            foreach (var item in _eatingRepo.ReadAll().GroupBy(t => t.Date.ToString("yyyy-MM-dd")))
-            {
-                dailyCalories.Add(item.Sum(t => t.Fat + t.Protein + t.Carbohydrate));
-            }
-            return dailyCalories.Average();
         }
     }
 }

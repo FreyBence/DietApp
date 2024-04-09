@@ -1,16 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DietAppClient.Helpers
 {
     internal class JsonParser
     {
-        public static async void WriteJson<T>(T item, string filePath) 
+        public static async void WriteJson<T>(T item, string filePath)
         {
             string json = JsonConvert.SerializeObject(item);
             string targetFile = System.IO.Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
@@ -25,7 +19,7 @@ namespace DietAppClient.Helpers
             {
                 string jsonContent = File.ReadAllText(filePath);
                 if (!string.IsNullOrEmpty(jsonContent))
-                   accumlator = JsonConvert.DeserializeObject<T>(jsonContent);
+                    accumlator = JsonConvert.DeserializeObject<T>(jsonContent);
             }
             return accumlator;
         }

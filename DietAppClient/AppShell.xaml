@@ -21,9 +21,13 @@
     <FlyoutItem Title="Eatings">
         <ShellContent ContentTemplate="{DataTemplate views:EatingsPage}"/>
     </FlyoutItem>
-    
+
+    <FlyoutItem Title="Records">
+        <ShellContent ContentTemplate="{DataTemplate views:RecordsPage}"/>
+    </FlyoutItem>
+
     <FlyoutItem Title="Statistics">
         <ShellContent ContentTemplate="{DataTemplate views:StattPage}"/>
     </FlyoutItem>
-
+   
 </Shell>
